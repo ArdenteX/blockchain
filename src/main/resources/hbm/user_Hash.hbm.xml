@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EM"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name = "com.taohongxu.blockchain.Entity.blockEntity.user_Hash">
+        <id name = "tableId" column="tableId">
+        </id>
+        <property name="hash" column="hash"/>
+        <property name="block_name" column="block_name"/>
+    </class>
+</hibernate-mapping>
