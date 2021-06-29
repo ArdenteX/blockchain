@@ -25,8 +25,13 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             chain.doFilter(request,response);
         }
 
-        SecurityContextHolder.getContext().setAuthentication(getAuthentication(tokenHeader));
-        super.doFilter(request,response,chain);
+        try{
+            SecurityContextHolder.getContext().setAuthentication(getAuthentication(tokenHeader));
+            super.doFilter(request,response,chain);
+        }catch (Exception e){
+            logger.info("无关紧要的问题:-D");
+        }
+
     }
 
     private UsernamePasswordAuthenticationToken getAuthentication(String tokenHeader){

@@ -11,7 +11,7 @@ public interface networkConfig {
 
     /**
      * 服务器地址
-     * 部署之后这里可以更改为部署后的地址*/
+     * 部署之后这里可以更改为部署后的地址输入为 0.0.0.0*/
     public static final String server = "0.0.0.0";
 
     /**

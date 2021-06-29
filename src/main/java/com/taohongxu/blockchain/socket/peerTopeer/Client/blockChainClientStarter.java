@@ -48,10 +48,15 @@ public class blockChainClientStarter{
     public static ClientTioConfig clientTioConfig = new ClientTioConfig(clientAioHandler,clientAioListener,reconnConf);
     public static TioClient tioClient = null;
     public static ClientChannelContext clientChannelContext = null;
-    @Autowired
+
     MongoDBService dao;
-    @Autowired
     RestTemplate restTemplate;
+
+    @Autowired
+    public blockChainClientStarter(MongoDBService dao,RestTemplate restTemplate){
+        this.dao = dao;
+        this.restTemplate = restTemplate;
+    }
 
     @Value("${managerUrl}")
     private String manageUrl;
@@ -83,6 +88,7 @@ public class blockChainClientStarter{
     @Scheduled(fixedRate = 300000)
     public void catchOtherServe(){
             logger.info("本机ip:{}",ip);
+            logger.info("manager url:" + manageUrl+"member?name="+name+"&appId="+appID+"&ip="+ip);
             try{
                 MemberData memberData = restTemplate.getForEntity(manageUrl+"member?name="+name+"&appId="+appID+"&ip="+ip,MemberData.class).getBody();
                 //合法的客户端
@@ -107,6 +113,7 @@ public class blockChainClientStarter{
                 }
             }catch (Exception e){
                 logger.info("未启动区块节点服务器！");
+                e.printStackTrace();
                 System.exit(0);
             }
     }
@@ -189,25 +196,19 @@ public class blockChainClientStarter{
         blockPacket blockPacket = new blockPacket();
 
 
+
+        try{
             String hash = dao.findLast().getHash();
             //没有区块，证明是新生的节点，所以要请求同步
-            if(hash != null){
-                blockPacket.setBody(JSON.toJSONString(hash).getBytes());
-                blockPacket.setType(packetType.NEXT_BLOCK);
-                logger.info("开始向group中的节点寻求next block");
-                Tio.sendToGroup(clientTioConfig,GroupName,blockPacket);
-            }
-            else {
-                logger.info("新生联盟节点，向群组寻求创世块");
-                blockPacket.setType(packetType.NEW_BLOCKCHAIN);
-                Tio.sendToGroup(clientTioConfig,GroupName,blockPacket);
-            }
-
-
-
-
-
-
+            blockPacket.setBody(JSON.toJSONString(hash).getBytes());
+            blockPacket.setType(packetType.NEXT_BLOCK);
+            logger.info("开始向group中的节点寻求next block");
+            Tio.sendToGroup(clientTioConfig,GroupName,blockPacket);
+        }catch (Exception e){
+            logger.info("新生联盟节点，向群组寻求创世块");
+            blockPacket.setType(packetType.NEW_BLOCKCHAIN);
+            Tio.sendToGroup(clientTioConfig,GroupName,blockPacket);
+        }
     }
 
     @Scheduled(fixedRate = 150000)
@@ -289,8 +290,13 @@ public class blockChainClientStarter{
     }
 
     public int pbftAgreeCount(){
-        return pfbtSize()*2+1;
+        return 1;
     }
+
+    //在多节点时候启动这一条
+//    public int pbftAgreeCount(){
+//        return pfbtSize()*2+1;
+//    }
 
 
 

@@ -9,11 +9,9 @@ import com.taohongxu.blockchain.Entity.DAO.blockchainUserDAO;
 import com.taohongxu.blockchain.Entity.DAO.user_HashDAO;
 import com.taohongxu.blockchain.Entity.JsonChange;
 import com.taohongxu.blockchain.Entity.blockEntity.block;
+import com.taohongxu.blockchain.Entity.blockEntity.initPacket;
 import com.taohongxu.blockchain.Entity.blockEntity.user_Hash;
 import com.taohongxu.blockchain.Entity.student;
-import com.taohongxu.blockchain.concurrency.certificateGeneratedCurrency;
-import com.taohongxu.blockchain.concurrency.excelCurrency;
-import com.taohongxu.blockchain.concurrency.mailCurrency;
 import com.taohongxu.blockchain.security.UserForm;
 import com.taohongxu.blockchain.security.blockChainUser;
 import com.taohongxu.blockchain.service.*;
@@ -134,7 +132,7 @@ public class schoolController {
             if(suffix.equals("jpg") || suffix.equals("png") || suffix.equals("jpeg") || suffix.equals("gif")){
 
                 String fileName = UUID.randomUUID().toString().replaceAll("-","")+ "." + suffix;
-                String filePath = "/root/blockchainData/picture";
+                String filePath = "/Users/xuhongtao/涛仔/blockchainData/photo";
                 File file = new File(filePath,fileName);
 
                 if(!file.getParentFile().exists()){
@@ -170,6 +168,13 @@ public class schoolController {
 
         blockName = orgName+"-" +name;
 
+        List<user_Hash> user_hashes = user_hashDAO.findAll();
+        for(user_Hash hash : user_hashes){
+            if (hash.getBlockName().equals(blockName)){
+                return "blockNameRepeat";
+            }
+        }
+
         logger.info("blockName = " + blockName);
         logger.info("students = " + students);
 
@@ -188,7 +193,9 @@ public class schoolController {
 
 
         //生成电子认证证书
-        if(blockchainService.addBlock(blockName,students)){
+        initPacket packet = blockchainService.addBlock(blockName,students);
+
+        if(packet.getCreateStatue().equals("true")){
             try{
 
                 CountDownLatch c1 = new CountDownLatch(1);
@@ -241,7 +248,7 @@ public class schoolController {
                         try{
                             logger.info("邮件发送");
                             c2.await();
-                            if(emailService.sendMailWithAttachment(new File("/root/blockchainData/HashExcel/"+orgName+"/"+blockName+".xlsx"))){
+                            if(emailService.sendMailWithAttachment(new File("/Users/xuhongtao/涛仔/blockchainData/HashExcel/"+orgName+"/"+blockName+".xlsx"),packet.getPrivateKey())){
                                 logger.info("上链完成");
                                 students.clear();
                                 ImageCount = 0;

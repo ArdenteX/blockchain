@@ -118,7 +118,7 @@ public class CompanyController {
         if(cHash == null){
             return "error";
         }
-        String path = "/root/blockchainData/DigitalCertificate/"+orgName+"/"+stu_num+".png";
+        String path = "/Users/xuhongtao/涛仔/blockchainData/DigitalCertificate/"+orgName+"/"+stu_num+".png";
         File orgFile = new File(path);
 
         if(!orgFile.exists()){

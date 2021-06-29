@@ -7,10 +7,7 @@ import com.taohongxu.blockchain.Entity.DAO.blockchainDAO;
 import com.taohongxu.blockchain.Entity.DAO.public_private_keyDAO;
 import com.taohongxu.blockchain.Entity.DAO.user_HashDAO;
 import com.taohongxu.blockchain.Entity.*;
-import com.taohongxu.blockchain.Entity.blockEntity.block;
-import com.taohongxu.blockchain.Entity.blockEntity.blockBody;
-import com.taohongxu.blockchain.Entity.blockEntity.blockHead;
-import com.taohongxu.blockchain.Entity.blockEntity.user_Hash;
+import com.taohongxu.blockchain.Entity.blockEntity.*;
 import com.taohongxu.blockchain.socket.peerTopeer.Client.blockChainClientStarter;
 import com.taohongxu.blockchain.socket.peerTopeer.tools.SHAEncryption;
 import org.slf4j.Logger;
@@ -54,7 +51,7 @@ public class BlockchainService {
    }
 
    //创世块
-   public block genesisBlock(List<student> students){
+   public initPacket genesisBlock(List<student> students){
         RSA rsa = new RSA();
         //创建blockhead的hashList
        List<String> studentHash = new ArrayList<>();
@@ -76,9 +73,9 @@ public class BlockchainService {
        blockHead.setMerkleTreeRootHash(blockHead.getMerkleTreeRootHash());
        blockHead.setPublicKey(rsa.getPublicKeyBase64());
 
-       ppk.setPrivateKey(rsa.getPrivateKeyBase64());
-       ppk.setPublicKey(blockHead.getPublicKey());
-       public_private_keyDAO.save(ppk);
+//       ppk.setPrivateKey(rsa.getPrivateKeyBase64());
+//       ppk.setPublicKey(blockHead.getPublicKey());
+//       public_private_keyDAO.save(ppk);
 
        blockBody.setStudents(students);
        logger.info("body = " + blockBody);
@@ -88,13 +85,12 @@ public class BlockchainService {
        genesisBlock.setBlockHead(blockHead);
        genesisBlock.setHash(SHAEncryption.SHAByHutool(blockHead.toString()+blockBody.toString()));
 
-       //测试
-//
+       initPacket init = new initPacket();
+       init.setBlock(genesisBlock);
+       init.setPrivateKey(rsa.getPrivateKeyBase64());
 
 
-
-
-       return genesisBlock;
+       return init;
    }
 
    /*添加块
@@ -102,7 +98,7 @@ public class BlockchainService {
    * 2.生成新区块
    * 3.验证并加入区块链
    * 4.入键值对数据库*/
-   public block creatBlock(List<student> students){
+   public initPacket creatBlock(List<student> students){
        List<String> studentHash = new ArrayList<>();
        for(student student : students){
            studentHash.add(JSON.toJSONString(student));
@@ -125,10 +121,10 @@ public class BlockchainService {
        blockHead.setHashList(studentHash);
        //merkleTree的根节点
        blockHead.setMerkleTreeRootHash(blockHead.getMerkleTreeRootHash());
-
-       ppk.setPrivateKey(rsa.getPrivateKeyBase64());
-       ppk.setPublicKey(blockHead.getPublicKey());
-       public_private_keyDAO.save(ppk);
+//      有安全风险
+//       ppk.setPrivateKey(rsa.getPrivateKeyBase64());
+//       ppk.setPublicKey(blockHead.getPublicKey());
+//       public_private_keyDAO.save(ppk);
 
        blockBody.setStudents(students);
        block.setBlockHead(blockHead);
@@ -137,7 +133,10 @@ public class BlockchainService {
        //hash值
        block.setHash(SHAEncryption.SHAByHutool(blockHead.toString()+blockBody.toString()));
 
-       return block;
+       initPacket init = new initPacket();
+       init.setBlock(block);
+       init.setPrivateKey(rsa.getPrivateKeyBase64());
+       return init;
 
    }
 
@@ -162,12 +161,13 @@ public class BlockchainService {
    * 判断是创世块还是newBlock，用switch+enum来实现
    * 因为有传入区块名，区块名与hash绑定所以可以顺便吧其存入对象中
    * 在生成区块的方法中加入公私钥的绑定*/
-   public boolean addBlock(String name,List<student> students) throws Exception{
+   public initPacket addBlock(String name,List<student> students) throws Exception{
 
        blockState bs  = blockType();
        switch(bs){
            case GENESIS_BLOCK:
-               block genesisBlock = genesisBlock(students);
+               initPacket packet = genesisBlock(students);
+               block genesisBlock = packet.getBlock();
                user_Hash user_hash = new user_Hash();
                user_hash.setBlockName(name);
                user_hash.setHash(genesisBlock.getHash());
@@ -177,9 +177,11 @@ public class BlockchainService {
                bcs.addBlock(name,genesisBlock);
 
                logger.info("创世块加入！" + blockchainCache.getBlocks().get(0).getHash());
-               return true;
+               packet.setCreateStatue("true");
+               return packet;
            case NEW_BLOCK:
-               block newBlock = creatBlock(students);
+               initPacket packet1 = creatBlock(students);
+               block newBlock = packet1.getBlock();
                user_Hash user_hash1 = new user_Hash();
                user_hash1.setBlockName(name);
                user_hash1.setHash(newBlock.getHash());
@@ -190,14 +192,20 @@ public class BlockchainService {
 
                    user_hashDAO.save(user_hash1);
                    bcs.addBlock(name,newBlock);
-                   return true;
+                   packet1.setCreateStatue("true");
+                   return packet1;
                }
-               else return false;
+               else{
+                   packet1.setCreateStatue("false");
+                   return packet1;
+               }
 
            case ERROR: break;
 
        }
-       return false;
+       return null;
    }
+
+
 
 }

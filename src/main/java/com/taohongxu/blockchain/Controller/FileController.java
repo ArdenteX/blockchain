@@ -29,7 +29,7 @@ public class FileController {
 
     @GetMapping("/download/{stu_num}")
     public ResponseEntity<byte[]> download(HttpServletRequest request,@PathVariable("stu_num") String stu_num) throws IOException {
-        File file = new File("/root/blockchainData/DigitalCertificate/",orgName+"/"+stu_num+".png");
+        File file = new File("/Users/xuhongtao/涛仔/blockchainData/DigitalCertificate//",orgName+"/"+stu_num+".png");
         byte[] body = null;
         InputStream is = new FileInputStream(file);
         body = new byte[is.available()];

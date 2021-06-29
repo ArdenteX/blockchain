@@ -57,7 +57,7 @@ public class UserController {
 
         blockChainUser user = blockchainUserDAO.findByUsername(username);
         json.setItem(user.getOrganizationName());
-        json.setItem(user.getEmail());
+        json.setItem2(user.getEmail());
         return json;
     }
 

@@ -50,7 +50,7 @@ public class CertificateGeneratedService{
         }
 
         //这里需要在前端硬编码三个类型的学历
-        Document document = new Document("/root/blockchainData/certificateTemplate/"+changeEnglish+".docx");
+        Document document = new Document("/Users/xuhongtao/涛仔/"+changeEnglish+".docx");
         school school = schoolDAO.findBySchoolName(student.getSchool());
         Calendar calendar = Calendar.getInstance();
         String[] str = student.getBirthday().split("-");
@@ -106,7 +106,7 @@ public class CertificateGeneratedService{
         bookmarksNavigator.insertParagraph(par);
 
         BufferedImage bufferedImage = document.saveToImages(0, ImageType.Bitmap);
-        File file = new File("/root/blockchainData/DigitalCertificate/",name+"/"+student.getStu_num()+".png");
+        File file = new File("/Users/xuhongtao/涛仔/blockchainData/DigitalCertificate/",name+"/"+student.getStu_num()+".png");
 
 
         if(!file.getParentFile().exists()){

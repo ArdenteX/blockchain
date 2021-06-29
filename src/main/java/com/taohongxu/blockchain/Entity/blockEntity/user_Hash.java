@@ -19,6 +19,10 @@ public class user_Hash extends RepresentationModel<user_Hash> {
     private String blockName;
     private String Hash;
 
+    public String getBlockName() {
+        return blockName;
+    }
+
     public void setHash(String hash) {
         Hash = hash;
     }

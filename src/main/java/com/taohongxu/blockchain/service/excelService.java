@@ -25,13 +25,13 @@ public class excelService {
         List<String> hashes = new ArrayList<>();
         try{
             for(student student : students){
-                File file = new File("/root/blockchainData/DigitalCertificate/",orgName+"/"+student.getStu_num()+".png");
+                File file = new File("/Users/xuhongtao/涛仔/blockchainData/DigitalCertificate/",orgName+"/"+student.getStu_num()+".png");
                 String fileHash = SHAEncryption.SHAByHutool(JSON.toJSONString(file));
                 hashes.add(fileHash);
             }
 
             if(hashes.size() != 0){
-                File file = new File("/root/blockchainData/HashExcel/"+orgName+"/"+blockName+".xlsx");
+                File file = new File("/Users/xuhongtao/涛仔/blockchainData/HashExcel/"+orgName+"/"+blockName+".xlsx");
                 if(!file.getParentFile().exists()){
                     file.getParentFile().mkdirs();
                 }

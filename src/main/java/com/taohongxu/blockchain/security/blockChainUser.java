@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Document(collection = "blockChainUser")
+@Document(collection = "blockchainUser")
 @Data
 public class blockChainUser{
     private static final long serialVersionUID = -4595387592069042041L;

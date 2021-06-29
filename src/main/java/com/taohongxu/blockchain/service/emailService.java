@@ -40,8 +40,8 @@ public class emailService {
         javaMailSender.send(msg);
     }
 
-    public boolean sendMailWithAttachment(File file){
-        mailDetail mailDetail = detail();
+    public boolean sendMailWithAttachment(File file,String privateKey){
+        mailDetail mailDetail = detail(privateKey);
         try{
             MimeMessage msg = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(msg,true);
@@ -58,11 +58,11 @@ public class emailService {
         return false;
     }
 
-    private mailDetail detail(){
+    private mailDetail detail(String privateKey){
         mailDetail mailDetail = new mailDetail();
         mailDetail.setFrom("2574753055@qq.com");
         mailDetail.setTo(localEmail);
-        mailDetail.setContext("上链成功！对应的电子哈希值在附录中");
+        mailDetail.setContext("上链成功！区块私钥为："+privateKey+",请妥善保管密钥。 对应的电子哈希值在附录中");
         mailDetail.setSubject("上链成功");
         return mailDetail;
     }
