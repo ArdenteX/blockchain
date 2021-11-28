@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +26,7 @@ public class emailService {
 
     @Autowired
     JavaMailSender javaMailSender;
+
     /**
      * 可以设置为事件
      * 当企业请求查询，由服务端发送邮件给企业邮箱告知公钥*/
@@ -40,7 +40,7 @@ public class emailService {
         javaMailSender.send(msg);
     }
 
-    public boolean sendMailWithAttachment(File file,String privateKey){
+    public boolean sendMailWithAttachment(File file,String privateKey,String hash){
         mailDetail mailDetail = detail(privateKey);
         try{
             MimeMessage msg = javaMailSender.createMimeMessage();

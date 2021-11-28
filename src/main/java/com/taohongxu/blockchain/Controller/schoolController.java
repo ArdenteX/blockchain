@@ -248,7 +248,7 @@ public class schoolController {
                         try{
                             logger.info("邮件发送");
                             c2.await();
-                            if(emailService.sendMailWithAttachment(new File("/Users/xuhongtao/涛仔/blockchainData/HashExcel/"+orgName+"/"+blockName+".xlsx"),packet.getPrivateKey())){
+                            if(emailService.sendMailWithAttachment(new File("/Users/xuhongtao/涛仔/blockchainData/HashExcel/"+orgName+"/"+blockName+".xlsx"),packet.getPrivateKey(),packet.getBlock().getHash())){
                                 logger.info("上链完成");
                                 students.clear();
                                 ImageCount = 0;
